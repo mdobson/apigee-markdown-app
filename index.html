@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>ACE in Action</title>
+<style type="text/css" media="screen">
+    #editor { 
+        position: absolute;
+        float: left;
+        width:50%;
+        height:100%;
+        top:0;
+        left:0;
+    }
+
+    #prev-container {
+        float:right;
+        width:50%;
+        height:100%;
+    }
+
+    #preview {
+        margin:20px;
+        height:400px;
+    }
+
+    #header {
+        margin:20px;
+    }
+
+    #subm-container {
+        margin:20px;
+    }
+</style>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
+<script type="text/javascript" src="https://use.typekit.net/yae0lcb.js"></script>
+<script type="text/javascript">try{Typekit.load();}catch(e){}</script>
+<script type="text/javascript" src="js/markdown.js"></script>
+<script type="text/javascript" src="js/apigee.js"></script>
+
+</head>
+<body>
+
+<div id="editor">
+</div>
+
+<div id="prev-container">
+    <h2 id="header">Live Preview</h2>
+    <div id="preview">
+        
+    </div>
+    <div id="subm-container">
+        <input type="button" value="submit" id="submit-button"/>
+    </div>
+
+</div>
+    
+<script src="src/ace.js" type="text/javascript" charset="utf-8"></script>
+<script>
+    var editor = ace.edit("editor");
+    editor.setTheme("ace/theme/monokai");
+    editor.getSession().setMode("ace/mode/markdown");
+
+    var apigee = new Apigee.Client({
+        orgName:"mdobson",
+        appName:"blog",
+        logging:true
+    });
+
+    $(document).ready(function(){
+        $("#submit-button").bind('click', function(){
+            //alert(editor.getValue());
+            var options = {
+                type:"posts",
+                content:editor.getValue(),
+            };
+
+            var post = new Apigee.Entity({
+                client:apigee,
+                data:options
+            });
+            post.save(function(err, response){
+                if(err) {
+                    console.log(err);
+                } else {
+                    console.log(response);
+                }
+            });
+        });
+
+        editor.getSession().on("change", function(e){
+            $("#preview").html(markdown.toHTML(editor.getValue()));
+        });
+    });
+</script>
+</body>
+</html>
