@@ -82,7 +82,19 @@
                 if(err) {
                     console.log(err);
                 } else {
-                    console.log(response);
+                    apigee.getLoggedInUser(function(err, data, user){
+                        if(err) {
+                            alert("Error with logged in user");
+                        } else {
+                            user.connect('posted', post, function(err, data){
+                                if(err) {
+                                    alert("error making connection");
+                                } else {
+                                    alert("post created!");
+                                }
+                            });
+                        }
+                    });
                 }
             });
         });
