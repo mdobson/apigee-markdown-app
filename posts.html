@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Apigee Markdown</title>
+<style type="text/css" media="screen">
+    #content { 
+        position: absolute;
+        float: left;
+        width:80%;
+        height:100%;
+        top:0;
+        left:0;
+    }
+
+    #sidebar {
+        float:right;
+        width:20%;
+        height:100%;
+    }
+
+    #preview {
+        margin:20px;
+        height:400px;
+    }
+
+    #posts {
+        margin:30px;
+    }
+
+    #about-container {
+        margin:20px;
+    }
+
+    #header {
+        margin:20px;
+    }
+</style>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
+<script type="text/javascript" src="https://use.typekit.net/yae0lcb.js"></script>
+<script type="text/javascript">try{Typekit.load();}catch(e){}</script>
+<script type="text/javascript" src="js/markdown.js"></script>
+<script type="text/javascript" src="js/apigee.js"></script>
+
+</head>
+<body>
+
+<div id="content">
+    <h1 id="header">Thoughts</h1>
+    <div id="posts">
+
+    </div>
+</div>
+
+<div id="sidebar">
+    <div id="about-container">
+        <h4>About</h4>
+        <p>Matt loves building things</p>
+    </div>
+</div>
+    
+<script>
+    
+    var apigee = new Apigee.Client({
+        orgName:"mdobson",
+        appName:"blog",
+        logging:true
+    });
+
+    $(document).ready(function(){
+        var options = {
+            client:apigee,
+            type:"posts",
+            qs:{
+                ql:"select * order by created desc"
+            }
+        };
+
+        var posts = new Apigee.Collection(options);
+
+        posts.fetch(function(err, data){
+            if(err) {
+                $("#posts").html(JSON.stringify(data));
+            } else {
+                while(posts.hasNextEntity()) {
+                    var post = posts.getNextEntity();
+                    var content = post.get("content");
+                    $("#posts").append(markdown.toHTML(content));
+                }
+            }
+        });
+    });
+</script>
+</body>
+</html>
