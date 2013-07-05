@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Apigee Markdown</title>
+<style type="text/css" media="screen">
+    #content { 
+        position: absolute;
+        float: left;
+        width:80%;
+        height:100%;
+        top:0;
+        left:0;
+    }
+
+    #sidebar {
+        float:right;
+        width:20%;
+        height:100%;
+    }
+
+    #preview {
+        margin:20px;
+        height:400px;
+    }
+
+    #posts {
+        margin:30px;
+    }
+
+    #about-container {
+        margin:20px;
+    }
+
+    #header {
+        margin:20px;
+    }
+</style>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
+<script type="text/javascript" src="https://use.typekit.net/yae0lcb.js"></script>
+<script type="text/javascript">try{Typekit.load();}catch(e){}</script>
+<script type="text/javascript" src="js/markdown.js"></script>
+<script type="text/javascript" src="js/apigee.js"></script>
+
+</head>
+<body>
+
+<div id="content">
+    <h1 id="header">Thoughts</h1>
+    <div id="posts">
+        <label for="username">username</label>
+        <input type="text" name="username" id="username"/>
+        <label for="password">password</label>
+        <input type="password" name="password" id="password"/>
+        <label for="firstname">firstname</label>
+        <input type="text" name="firstname" id="firstname"/>
+        <label for="email">email</label>
+        <input type="text" name="email" id="email"/>
+        <br/>
+        <input type="button" value="submit" id="signup"/>
+    </div>
+</div>
+
+<div id="sidebar">
+    <div id="about-container">
+        <h4>About</h4>
+        <p>Matt loves building things</p>
+    </div>
+</div>
+    
+<script>
+    
+    var apigee = new Apigee.Client({
+        orgName:"mdobson",
+        appName:"blog",
+        logging:true
+    });
+
+    $(document).ready(function(){
+        $("#signup").bind("click", function(){
+            var username = $("#username").val();
+            var password = $("#password").val();
+            var firstname = $("#firstname").val();
+            var email = $("#email").val();
+            apigee.signup(username, password, email, firstname, function(err, user){
+                if(err) {
+                    alert("error signing you up");
+                } else {
+                    apigee.login(username, password, function(err, data, user){
+                        if(err) {
+                            alert(err);
+                        } else {
+                            window.location.replace(window.location.origin + '/index.html');
+                        }
+                    });
+                }
+            });
+        });
+    });
+</script>
+</body>
+</html>
